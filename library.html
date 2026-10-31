@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Main Hall | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="main-hall">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- The Main Hall: the library picture with a catalog card pinned on each room -->
+  <main class="hall">
+    <div class="page-head">
+      <h1>The Main Hall</h1>
+      <span class="label">Catalog of rooms · 5 entries</span>
+    </div>
+
+    <div class="scene">
+      <img src="images/main-hall.jpg" alt="A tall old library hall with shelves, a ladder, reading tables and an upper gallery">
+
+      <!-- Each card sits where its room is in the picture.
+           The status stamp (OPEN / CLOSED / NEW) is filled in by script.js -->
+      <div class="room-cards">
+        <a class="room-card" href="index.html" data-page="front-desk" style="left: 2%; top: 5%;">
+          <span class="call">001 FRO</span>
+          <span class="room-name">Front Desk</span>
+          <span class="room-note">Where you came in.</span>
+          <span class="status"></span>
+        </a>
+
+        <a class="room-card" href="special-collections.html" data-page="special-collections" style="right: 5%; top: 7%;">
+          <span class="call">090 SPE</span>
+          <span class="room-name">Special Collections</span>
+          <span class="room-note">The upper gallery. Rare books only.</span>
+          <span class="status"></span>
+        </a>
+
+        <a class="room-card" href="stacks.html" data-page="stacks" style="right: 2%; top: 52%;">
+          <span class="call">020 STA</span>
+          <span class="room-name">The Stacks</span>
+          <span class="room-note">Three shelves. A few gaps.</span>
+          <span class="status"></span>
+        </a>
+
+        <a class="room-card" href="reading-room.html" data-page="reading-room" style="left: 43%; top: 56%;">
+          <span class="call">028 REA</span>
+          <span class="room-name">Reading Room</span>
+          <span class="room-note">Quiet tables by lamplight.</span>
+          <span class="status"></span>
+        </a>
+
+        <a class="room-card" href="checkout-card.html" data-page="checkout-card" style="left: 16%; top: 70%;">
+          <span class="call">025 CHE</span>
+          <span class="room-name">Checkout Card</span>
+          <span class="room-note">Your record of what was found.</span>
+          <span class="status"></span>
+        </a>
+      </div>
+    </div>
+
+    <p class="hall-note">Closed rooms open as you find what was lost.</p>
+  </main>
+
+  <!-- FOUND stamp and letter slip (same on every page) -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Front Desk | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="front-desk">
+
+  <!-- Top bar: no rooms here, this is where the visit starts -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- Front Desk -->
+  <main class="desk">
+    <div class="scene">
+      <img src="images/desk.png" alt="The library's front desk with an open book, an inkwell and a candle">
+
+      <button type="button" class="crest" id="crest" aria-label="Library crest">
+        <span class="stars" aria-hidden="true"><i>★</i><i>★</i><i class="odd">★</i><i>★</i><i>★</i></span>
+        <span class="initials">U</span>
+        <span class="year">MCMXXXI</span>
+      </button>
+    </div>
+
+    <div class="desk-line">
+      <p class="notice">Something is missing from this library. Look closer.</p>
+      <button type="button" class="info" id="infoBtn" aria-expanded="false" aria-controls="infoPop" aria-label="How to play">i</button>
+
+      <div class="pop" id="infoPop" hidden>
+        <span class="label">How it works</span>
+        <p>Five secrets are hidden in this library. Click, hover and type to find them. Each one leaves a letter on your Checkout Card. Put the letters together to open Special Collections.</p>
+        <button type="button" class="close" id="infoClose">Got it</button>
+      </div>
+    </div>
+
+    <!-- shown once the crest secret is found -->
+    <a class="enter-link" id="enterLink" href="library.html" hidden>Enter the library &rarr;</a>
+
+    <p class="silence">Silence, please.</p>
+  </main>
+
+  <!-- FOUND stamp and letter slip (same on every page) -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
