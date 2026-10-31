@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Stacks | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="stacks">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- The Stacks -->
+  <main class="stacks">
+    <a class="back" href="library.html">&larr; Main Hall</a>
+
+    <div class="page-head">
+      <h1>The Stacks</h1>
+      <span class="label">3 shelves · 13 books</span>
+    </div>
+
+    <div class="shelves">
+      <!-- Each book sets its height (--h), width (--w) and colour (--c) -->
+      <div>
+        <div class="shelf-books">
+          <button type="button" class="spine" style="--h:150px; --w:38px; --c:#6B2430"><span>A History of Dust</span></button>
+          <button type="button" class="spine" style="--h:134px; --w:32px; --c:#2E4A34"><span>The Quiet Hours</span></button>
+          <button type="button" class="spine" style="--h:160px; --w:44px; --c:#A07A2E"><span>Notes on Ink</span></button>
+          <div class="gap"></div>
+          <button type="button" class="spine" style="--h:140px; --w:34px; --c:#5A3A22"><span>Marginalia</span></button>
+          <button type="button" class="spine" style="--h:156px; --w:40px; --c:#22382B"><span>The Lamplighter</span></button>
+        </div>
+        <div class="shelf-board"></div>
+        <span class="label shelf-label">000–299 General works</span>
+      </div>
+
+      <div>
+        <div class="shelf-books">
+          <button type="button" class="spine" style="--h:146px; --w:36px; --c:#7C3B32"><span>Catalogue of Rain</span></button>
+          <button type="button" class="spine" style="--h:128px; --w:32px; --c:#6B6A3A"><span>Overdue</span></button>
+          <!-- Secret 2: this book has the faint bookplate mark -->
+          <button type="button" class="spine" id="bookplateBook" style="--h:162px; --w:42px; --c:#2F4A3A"><span>Ex Libris</span><i class="mark" aria-hidden="true"></i></button>
+          <button type="button" class="spine" style="--h:138px; --w:38px; --c:#8E6A2C"><span>Paper Moths</span></button>
+          <div class="gap"></div>
+        </div>
+        <div class="shelf-board"></div>
+        <span class="label shelf-label">300–599 Social sciences</span>
+      </div>
+
+      <div>
+        <div class="shelf-books">
+          <div class="gap"></div>
+          <button type="button" class="spine" style="--h:150px; --w:34px; --c:#4A2A22"><span>The Card Index</span></button>
+          <button type="button" class="spine" style="--h:134px; --w:42px; --c:#2F3D5C"><span>Small Rooms</span></button>
+          <button type="button" class="spine" style="--h:158px; --w:36px; --c:#6B2430"><span>Under the Stairs</span></button>
+          <button type="button" class="spine" style="--h:144px; --w:38px; --c:#A07A2E"><span>Bound in Green</span></button>
+        </div>
+        <div class="shelf-board"></div>
+        <span class="label shelf-label">600–999 Arts &amp; history</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOUND stamp and letter slip (same on every page) -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,574 @@
+/* =========================================================
+   The Unreturned - shared styles for every page
+   ========================================================= */
+
+/* ---------- Fonts (saved in the fonts folder, so they work offline) ---------- */
+/* IM Fell English: headings and text (old printed books).
+   Special Elite: labels, cards and slips (a worn typewriter). */
+@font-face {
+  font-family: "IM Fell English";
+  src: url("fonts/im-fell-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IM Fell English";
+  src: url("fonts/im-fell-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Special Elite";
+  src: url("fonts/special-elite.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Colours and fonts ---------- */
+/* A dark library at night. Paper things (cards, slips, stamps) stay cream. */
+:root {
+  --bg: #15110D;       /* dark panelled wood */
+  --text: #E6DCC6;     /* cream ink */
+  --head: #D4BC8A;     /* brass, for headings and the crest */
+  --accent: #A3B1E6;   /* stamp blue, lightened to read on dark */
+  --rule: #4A3F33;     /* borders and lines */
+  --soft: #A0937E;     /* faded labels */
+  --wood: #7A5229;     /* shelves */
+  --paper: #FFF8E6;    /* cards, slips and pop-ups */
+  --paper-ink: #2B2622;
+  --stamp: #31407A;    /* real stamp blue, used on paper */
+  --serif: "IM Fell English", Georgia, "Times New Roman", serif;
+  --mono: "Special Elite", "Courier New", Courier, monospace;
+}
+
+/* Lights-out mode (after secret 4): the room goes almost black */
+body.night {
+  --bg: #070605;
+  --text: #B9AE98;
+  --head: #9C8A64;
+  --accent: #7F8BBE;
+  --rule: #2A241D;
+  --soft: #6E6556;
+}
+
+/* ---------- Basics ---------- */
+[hidden] { display: none !important; }
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* Faint grain over the whole page (an inverted paper scan, so the specks show as dust) */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: url("images/paper-dark.jpg") center / cover;
+  mix-blend-mode: screen;
+  opacity: .35;
+}
+
+h1, h2, h3 { font-weight: normal; margin: 0; }
+p { margin: 0; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+/* ---------- Top bar ---------- */
+.bar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--rule);
+}
+.where {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 20px;
+}
+.brand {
+  font-size: 18px;
+  color: var(--head);
+  white-space: nowrap;
+}
+
+/* back button to the Main Hall (at the top of each room, under the top bar) */
+.back {
+  display: inline-block;
+  margin-bottom: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--soft);
+  text-decoration: none;
+}
+.back:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+
+/* the small shelf that fills with one book per secret */
+.found { display: flex; align-items: center; gap: 12px; }
+.mini-shelf {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 30px;
+  padding: 0 3px;
+  border-bottom: 3px solid var(--wood);
+}
+.mini-shelf span {
+  width: 9px;
+  height: 24px;
+  border: 1px dashed var(--rule);
+  border-bottom: 0;
+}
+.mini-shelf span.got { border: 0; }
+.mini-shelf span.got:nth-child(1) { background: #2F4A3A; }
+.mini-shelf span.got:nth-child(2) { background: #6B2430; }
+.mini-shelf span.got:nth-child(3) { background: #A07A2E; }
+.mini-shelf span.got:nth-child(4) { background: #31407A; }
+.mini-shelf span.got:nth-child(5) { background: #5A3A22; }
+.mini-shelf span.new { animation: drop .5s cubic-bezier(.3, 1.4, .5, 1) both; }
+@keyframes drop {
+  from { transform: translateY(-16px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.count {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* plain square buttons */
+.ask, .btn {
+  background: none;
+  border: 1px solid var(--text);
+  border-radius: 0;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.ask:hover, .ask[aria-expanded="true"], .btn:hover {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* ---------- Pop-up slips (librarian hint, "i" info) ---------- */
+.pop {
+  position: absolute;
+  z-index: 60;
+  width: min(320px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 1px solid #B9AD98;
+  box-shadow: 3px 4px 0 rgba(0, 0, 0, .5);
+}
+.pop .label { font-size: 11px; color: #74695B; }
+.pop p { font-style: italic; font-size: 17px; line-height: 1.45; }
+.pop .close {
+  align-self: flex-start;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--stamp);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#hintPop { top: calc(100% + 8px); right: 28px; }
+
+/* ---------- FOUND stamp and letter slip ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 20px;
+  background: rgba(0, 0, 0, .6);
+}
+.stamp {
+  font-family: var(--mono);
+  font-weight: bold;
+  font-size: clamp(42px, 9vw, 76px);
+  letter-spacing: .18em;
+  color: #31407A;
+  background: #F9ECCC;
+  border: 6px double #31407A;
+  padding: 2px 22px;
+  transform: rotate(-6deg);
+}
+.stamp.play { animation: stampIn .5s cubic-bezier(.2, .8, .3, 1.1) both; }
+@keyframes stampIn {
+  0%   { transform: rotate(-6deg) scale(2.6); opacity: 0; }
+  60%  { transform: rotate(-6deg) scale(.94); opacity: 1; }
+  100% { transform: rotate(-6deg) scale(1); opacity: 1; }
+}
+.slip {
+  width: min(360px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px;
+  background: #FFF8E6;
+  color: #2B2622;
+  border: 1px solid #B9AD98;
+  font-family: var(--mono);
+  transform: rotate(1deg);
+}
+.slip-letter {
+  font-size: 40px;
+  font-weight: bold;
+  line-height: 1;
+  color: #31407A;
+}
+.slip-note { font-size: 13px; color: #74695B; }
+.slip-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.slip .go-next {
+  background: #2B2622;
+  color: #F9ECCC;
+  border-color: #2B2622;
+}
+.slip .go-next:hover { background: #31407A; border-color: #31407A; }
+.slip .stay {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: #2B2622;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Picture scenes (desk, main hall) ---------- */
+.scene {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;   /* lets things inside size themselves with "cqw" units */
+}
+.scene img { display: block; width: 100%; height: auto; }
+.desk .scene img { filter: brightness(.82); }   /* the desk sits in a dim room */
+body.night .scene img { filter: brightness(.3) saturate(.6); }
+
+/* =========================================================
+   Page 1: Front Desk (the start)
+   ========================================================= */
+.desk {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 28px 40px;
+}
+.desk .scene { max-width: 900px; }
+
+/* the crest hangs on the wall above the desk */
+.crest {
+  position: absolute;
+  top: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max(64px, 14cqw);
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--bg);
+  color: var(--head);
+  border: 2px solid var(--head);
+  box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 5px var(--head);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.crest .stars { display: flex; gap: .15em; font-size: max(8px, 1.6cqw); line-height: 1; }
+.crest .stars i { font-style: normal; }
+.crest .stars i:nth-child(1), .crest .stars i:nth-child(5) { transform: translateY(.35em); }
+.crest .stars i:nth-child(2), .crest .stars i:nth-child(4) { transform: translateY(.08em); }
+.crest .stars i.odd { color: #9DBBA4; }   /* the star that is a slightly different colour */
+.crest .initials { font-size: max(22px, 5cqw); line-height: 1.05; }
+.crest .year { font-family: var(--mono); font-size: max(6px, .95cqw); letter-spacing: .25em; }
+.crest.bump { animation: bump .18s ease-out; }
+@keyframes bump { 50% { transform: translateX(-50%) scale(.94); } }
+
+.desk-line {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.notice { font-style: italic; font-size: 18px; text-align: center; }
+.info {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--text);
+  background: none;
+  cursor: pointer;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1;
+}
+.info:hover, .info[aria-expanded="true"] { background: var(--text); color: var(--bg); }
+#infoPop { bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); }
+
+/* appears once the crest secret is found */
+.enter-link {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 2px;
+}
+.enter-link:hover { color: var(--text); border-color: var(--text); }
+.silence {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
+/* =========================================================
+   Page headings inside the rooms
+   ========================================================= */
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 26px;
+}
+.page-head h1 { font-size: clamp(26px, 4vw, 34px); color: var(--head); }
+.page-head .label { font-size: 11px; }
+
+/* =========================================================
+   The Main Hall: a catalog card pinned on each room
+   ========================================================= */
+.hall {
+  flex: 1;
+  width: 100%;
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 32px 28px 48px;
+}
+.hall .scene { border: 1px solid var(--rule); }
+.hall-note { margin-top: 14px; font-style: italic; color: var(--soft); }
+
+.room-card {
+  position: absolute;          /* each card sets its own left/right and top */
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px 18px;
+  background: #FFF8E6;
+  color: #2B2622;
+  border: 1px solid #B9AD98;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, .3);
+  text-decoration: none;
+  transition: transform .2s;
+}
+.room-card:hover, .room-card:focus-visible { transform: translateY(-4px) rotate(-1deg); }
+.room-card .call { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; color: #74695B; }
+.room-card .room-name {
+  font-size: 17px;
+  line-height: 1.25;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #C98C86;   /* the red rule on an old catalog card */
+}
+.room-card .room-note { font-size: 12px; font-style: italic; color: #5C5248; }
+/* the punched hole at the bottom of a catalog card */
+.room-card::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 50%;
+  border: 1px solid #B9AD98;
+}
+
+/* OPEN / CLOSED / NEW stamp in the corner of each card */
+.status {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: .12em;
+  color: #31407A;
+  border: 1.5px solid #31407A;
+  padding: 0 4px;
+  transform: rotate(-6deg);
+}
+.room-card.closed { background: #CFC3AA; cursor: not-allowed; }
+.room-card.closed .room-name, .room-card.closed .room-note { color: #8A7F70; }
+.room-card.closed .status { color: #8A2E2A; border-color: #8A2E2A; }
+.room-card.is-new .status { background: #31407A; color: #FFF8E6; }
+
+/* =========================================================
+   Page 2: The Stacks
+   ========================================================= */
+.stacks {
+  flex: 1;
+  width: 100%;
+  max-width: 660px;
+  margin: 0 auto;
+  padding: 36px 28px 56px;
+}
+.shelves { display: flex; flex-direction: column; gap: 34px; }
+.shelf-books {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px;
+  padding: 14px 10px 0;
+  overflow: hidden;
+}
+.shelf-board { height: 7px; background: var(--wood); }
+.shelf-label { display: block; margin-top: 6px; font-size: 10px; }
+
+/* each book uses its own --h (height), --w (width) and --c (colour) */
+.spine {
+  position: relative;
+  flex: none;
+  height: var(--h);
+  width: var(--w);
+  background: var(--c);
+  color: #F1E6CF;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .2s;
+}
+.spine span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  font-size: 12px;
+  max-height: calc(var(--h) - 26px);
+}
+/* gold bands at the top and bottom of each spine */
+.spine::before, .spine::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-top: 1px solid rgba(222, 190, 120, .55);
+  border-bottom: 1px solid rgba(222, 190, 120, .55);
+}
+.spine::before { top: 9px; }
+.spine::after { bottom: 9px; }
+.spine:hover, .spine:focus-visible { transform: translateY(-8px); }
+
+/* the almost invisible bookplate mark (secret 2) */
+.spine .mark {
+  position: absolute;
+  bottom: 17px;
+  left: 50%;
+  margin-left: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #F1E6CF;
+  border-radius: 50%;
+  opacity: .1;
+  transition: opacity .7s;
+}
+.spine:hover .mark, .spine.revealed .mark { opacity: 1; }
+
+/* an empty space where a book was never returned */
+.gap { flex: none; width: 56px; }
+
+/* ---------- Small screens ---------- */
+@media (max-width: 760px) {
+  /* the catalog cards move under the picture as a list */
+  .hall .scene { border: 0; }
+  .hall .scene img { border: 1px solid var(--rule); }
+  .room-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  /* stay "relative" so the stamp and hole stay on the card,
+     and ignore the left/right/top written on each card for big screens */
+  .room-card { position: relative; width: auto; left: auto !important; right: auto !important; top: auto !important; }
+}
+
+@media (max-width: 640px) {
+  .bar { padding: 12px 16px; }
+  .where { flex-basis: 100%; }
+  #hintPop { right: 16px; }
+  .desk { padding: 24px 16px 32px; }
+  .hall { padding: 24px 16px 36px; }
+  .stacks { padding: 28px 16px 40px; }
+  .gap { width: 22px; }
+}
+
+/* ---------- Less motion for people who ask for it ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
