@@ -1,4 +1,4 @@
-# The Forgotten Shelf: Project Proposal&#32;
+# The Forgotten Shelf&#32;
 
 ## The idea in brief
 
