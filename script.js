@@ -8,44 +8,53 @@
 const STORAGE_KEY = 'theUnreturned';
 const FINAL_CODE = 'LOST';
 
-// Secrets 1-4 each return a lost book. Each book's title is one letter,
-// and the four titles put back on the shelf in order spell FINAL_CODE.
-// "colour" is the book's cover (it matches its book on the small shelf).
+// Secrets 1-4 each return one volume of a lost four-volume series.
+// Each volume's title is a single letter. Shelved in volume order (I to IV),
+// the titles spell FINAL_CODE. Secret 5 is putting the series back on the shelf.
+// "colour" is the volume's cover (it matches its book on the small shelf).
+const SERIES_NAME = 'The Unreturned';
+const BOOK_COUNT = 4;
+
 const SECRETS = [
   {
     name: 'The Crest',
+    volume: 'I',
     title: 'L',
     colour: '#2F4A3A',
-    message: 'Look closer. A book that was never returned was hiding behind the crest. Its title is a single letter: L.',
+    message: 'Look closer. Volume I of a lost series was hiding behind the crest. Its title is a single letter: L.',
     hint: 'Some crests are worth more than a glance. Try pressing the one at the front desk.'
   },
   {
     name: 'The Bookplate',
+    volume: 'II',
     title: 'O',
     colour: '#6B2430',
-    message: 'A bookplate was hiding here. It belongs to a missing book titled O.',
+    message: 'A bookplate was hiding here. It belongs to Volume II of the same series, titled O.',
     hint: 'Not every book wants to be opened. Some only want to be noticed. Check the shelves.'
   },
   {
     name: 'The Shelf Order',
+    volume: 'III',
     title: 'S',
     colour: '#A07A2E',
-    message: 'Shelved correctly. A thin book slides out from between them, titled S.',
+    message: 'Shelved correctly. Volume III slides out from between them, titled S.',
     hint: 'The librarian shelves books by the hours of the day.'
   },
   {
     name: 'The Forgotten Word',
+    volume: 'IV',
     title: 'T',
     colour: '#31407A',
-    message: 'The lights go out. In the dark you find one more lost book, titled T.',
+    message: 'The lights go out. In the dark you find Volume IV, the last of the series, titled T.',
     hint: 'Look at the bottom of the front desk page. Then say it quietly to the librarian.'
   },
   {
     name: 'The Shelf Mark',
+    volume: '',
     title: '',
-    colour: '#5A3A22',
-    message: 'The four books are back on the shelf, and their titles spell LOST. The Special Collections room is open.',
-    hint: 'Four lost books, four one-letter titles. Put them back on the shelf in the right order.'
+    colour: '',
+    message: 'All four volumes are back on the shelf in order, and their titles spell LOST. The Special Collections room is open.',
+    hint: 'Four volumes of one series. Shelve them by volume number, then read the titles.'
   }
 ];
 
@@ -53,6 +62,7 @@ const SECRETS = [
 function makeBook(secret) {
   const book = document.createElement('span');
   book.className = 'book';
+  book.title = SERIES_NAME + ', Volume ' + secret.volume;
   book.style.setProperty('--c', secret.colour);
   book.textContent = secret.title;
   return book;
@@ -93,9 +103,10 @@ function saveState() {
 
 let state = loadState();
 
+// Books found = volumes recovered (secrets 1-4; secret 5 is not a book)
 function countFound() {
   let count = 0;
-  for (let i = 0; i < state.found.length; i++) {
+  for (let i = 0; i < BOOK_COUNT; i++) {
     if (state.found[i]) count++;
   }
   return count;
@@ -166,7 +177,9 @@ function unlockSecret(i) {
   saveState();
 
   updateHeader();
-  document.querySelectorAll('#miniShelf span')[i].classList.add('new');
+  if (i < BOOK_COUNT) {
+    document.querySelectorAll('#miniShelf span')[i].classList.add('new');
+  }
 
   playSound('stamp');
   showFound(i);
@@ -175,15 +188,14 @@ function unlockSecret(i) {
 function showFound(i) {
   document.getElementById('slipText').textContent = SECRETS[i].message;
 
-  // Secrets 1-4 hand the player a recovered book
+  // Secrets 1-4 hand the player a recovered volume of the series
   const slipBook = document.getElementById('slipBook');
-  slipBook.replaceChildren();
-  slipBook.hidden = SECRETS[i].title === '';
-  if (SECRETS[i].title) {
+  slipBook.hidden = i >= BOOK_COUNT;
+  if (i < BOOK_COUNT) {
     const caption = document.createElement('span');
     caption.className = 'slip-book-caption';
-    caption.textContent = 'Book recovered: "' + SECRETS[i].title + '"';
-    slipBook.append(makeBook(SECRETS[i]), caption);
+    caption.textContent = SERIES_NAME + ', Volume ' + SECRETS[i].volume + ' of IV: "' + SECRETS[i].title + '"';
+    slipBook.replaceChildren(makeBook(SECRETS[i]), caption);
   }
 
   // Does this secret open a new page? Then offer a way to it.
@@ -456,12 +468,12 @@ function setupReadingRoom() {
 }
 
 // =========================================================
-// Page 4: Checkout Card — five stamped secrets and shelf mark
+// Page 4: Checkout Card — five stamped secrets and the shelf of volumes
 // =========================================================
 function setupCheckoutCard() {
   const rows = document.getElementById('checkoutRows');
 
-  // Display the five secrets with their names, stamps, and recovered books.
+  // Display the five secrets with their names, stamps, and recovered volumes.
   function renderCard() {
     rows.replaceChildren();
 
@@ -476,15 +488,15 @@ function setupCheckoutCard() {
       status.className = state.found[i] ? 'checkout-stamped' : 'checkout-locked';
       status.textContent = state.found[i] ? 'STAMPED · ' + state.dates[i] : 'LOCKED';
 
-      // Secrets 1-4 show their recovered book, or an empty space until it is found.
+      // Rows 1-4 show their recovered volume, or an empty space until it is found.
+      // Row 5 (the shelf mark) has no book of its own.
       let book;
-      if (i < 4 && state.found[i]) {
+      if (i < BOOK_COUNT && state.found[i]) {
         book = makeBook(secret);
       } else {
         book = document.createElement('span');
-        book.className = 'book empty';
+        book.className = i < BOOK_COUNT ? 'book empty' : 'book none';
       }
-      if (i === 4) book.classList.add('none');
 
       row.append(name, status, book);
       rows.appendChild(row);
@@ -524,7 +536,7 @@ function setupCheckoutCard() {
   // If the typed title matches a recovered book, the box takes that book's cover
   function paintBox(input) {
     const book = SECRETS.find(function (secret, i) {
-      return i < 4 && state.found[i] && secret.title === input.value;
+      return i < BOOK_COUNT && state.found[i] && secret.title === input.value;
     });
     input.classList.toggle('filled', Boolean(book));
     input.style.setProperty('--c', book ? book.colour : '');
@@ -581,15 +593,15 @@ function setupCheckoutCard() {
       return input.value.trim().toUpperCase();
     }).join('');
 
-    if (!state.found.slice(0, 4).every(Boolean)) {
-      feedback.textContent = 'Some books are still missing. Find them first.';
+    if (!state.found.slice(0, BOOK_COUNT).every(Boolean)) {
+      feedback.textContent = 'Some volumes are still missing. Find them first.';
     } else if (answer === FINAL_CODE) {
-      feedback.textContent = 'STAMPED! The books are back in order. Special Collections unlocked.';
+      feedback.textContent = 'STAMPED! The series is back in order. Special Collections unlocked.';
       unlockSecret(4);
       renderCard();
       updateSpecialLink();
     } else {
-      feedback.textContent = 'Those books do not go there. Try another order.';
+      feedback.textContent = 'The volumes are out of order. Try again.';
 
       boxes.classList.remove('shake');
       void boxes.offsetWidth;
@@ -629,14 +641,21 @@ function setupCheckoutCard() {
 function setupSpecialCollections() {
   const list = document.getElementById('finalSecretList');
 
-  // Display all five recovered secrets.
+  // Display all five secrets, with the recovered volume beside secrets 1-4.
   SECRETS.forEach(function (secret, i) {
     const row = document.createElement('div');
     row.className = 'final-secret-row';
 
-    const number = document.createElement('span');
-    number.className = 'secret-number';
-    number.textContent = String(i + 1).padStart(2, '0');
+    // the recovered volume takes the place of the row number
+    // (the shelf mark has no volume, so its space stays empty)
+    let number;
+    if (i < BOOK_COUNT) {
+      number = makeBook(secret);
+    } else {
+      number = document.createElement('span');
+      number.className = 'book none';
+    }
+    number.classList.add('secret-number');
 
     const details = document.createElement('div');
     details.className = 'secret-details';

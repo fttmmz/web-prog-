@@ -152,7 +152,6 @@ button { font: inherit; color: inherit; }
 .mini-shelf span.got:nth-child(2) { background: #6B2430; }
 .mini-shelf span.got:nth-child(3) { background: #A07A2E; }
 .mini-shelf span.got:nth-child(4) { background: #31407A; }
-.mini-shelf span.got:nth-child(5) { background: #5A3A22; }
 .mini-shelf span.new { animation: drop .5s cubic-bezier(.3, 1.4, .5, 1) both; }
 @keyframes drop {
   from { transform: translateY(-16px); opacity: 0; }
@@ -887,6 +886,8 @@ body.night .table-book {
   font-size: 13px;
 }
 
+.checkout-entry .book { justify-self: end; }
+
 .checkout-entry > span:first-child {
   overflow-wrap: anywhere;
 }
@@ -1122,14 +1123,14 @@ body.night .table-book {
   border-bottom: 0;
 }
 
-.secret-number,
 .secret-date {
   font-family: var(--mono);
   color: var(--soft);
 }
 
+/* the recovered book sits where the row number used to be */
 .secret-number {
-  font-size: 12px;
+  justify-self: start;
 }
 
 .secret-date {
