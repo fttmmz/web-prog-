@@ -481,11 +481,12 @@ function setupArchives() {
 function setupCheckoutCard() {
   const rows = document.getElementById('checkoutRows');
 
-  // Display the five secrets with their names, stamps, and recovered volumes.
+  // Display the four volumes: where each was found, its stamp, and the book.
+  // (The shelf mark is not a book, so it has no row; the shelf below shows it.)
   function renderCard() {
     rows.replaceChildren();
 
-    SECRETS.forEach(function (secret, i) {
+    SECRETS.slice(0, BOOK_COUNT).forEach(function (secret, i) {
       const row = document.createElement('div');
       row.className = 'checkout-entry';
 
@@ -496,14 +497,13 @@ function setupCheckoutCard() {
       status.className = state.found[i] ? 'checkout-stamped' : 'checkout-locked';
       status.textContent = state.found[i] ? 'STAMPED · ' + state.dates[i] : 'LOCKED';
 
-      // Rows 1-4 show their recovered volume, or an empty space until it is found.
-      // Row 5 (the shelf mark) has no book of its own.
+      // The recovered volume, or an empty space until it is found
       let book;
-      if (i < BOOK_COUNT && state.found[i]) {
+      if (state.found[i]) {
         book = makeBook(secret);
       } else {
         book = document.createElement('span');
-        book.className = i < BOOK_COUNT ? 'book empty' : 'book none';
+        book.className = 'book empty';
       }
 
       row.append(name, status, book);
@@ -660,20 +660,13 @@ function setupCheckoutCard() {
 function setupSpecialCollections() {
   const list = document.getElementById('finalSecretList');
 
-  // Display all five secrets, with the recovered volume beside secrets 1-4.
-  SECRETS.forEach(function (secret, i) {
+  // Display the four recovered volumes and where each one was found.
+  SECRETS.slice(0, BOOK_COUNT).forEach(function (secret, i) {
     const row = document.createElement('div');
     row.className = 'final-secret-row';
 
     // the recovered volume takes the place of the row number
-    // (the shelf mark has no volume, so its space stays empty)
-    let number;
-    if (i < BOOK_COUNT) {
-      number = makeBook(secret);
-    } else {
-      number = document.createElement('span');
-      number.className = 'book none';
-    }
+    const number = makeBook(secret);
     number.classList.add('secret-number');
 
     const details = document.createElement('div');
