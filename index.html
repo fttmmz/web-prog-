@@ -48,7 +48,7 @@
 
       <div class="pop" id="infoPop" hidden>
         <span class="label">How it works</span>
-        <p>Five secrets are hidden in this library. Click, hover and type to find them. Each one leaves a letter on your Checkout Card. Put the letters together to open Special Collections.</p>
+        <p>Five secrets are hidden in this library. Click, hover and type to find them. Four of them return a lost book to your Checkout Card, and each book&rsquo;s title is a single letter. Put the books back on the shelf in the right order to open Special Collections.</p>
         <button type="button" class="close" id="infoClose">Got it</button>
       </div>
     </div>
@@ -59,12 +59,12 @@
     <p class="silence">Silence, please.</p>
   </main>
 
-  <!-- FOUND stamp and letter slip (same on every page) -->
+  <!-- FOUND stamp and recovered-book slip (same on every page) -->
   <div class="overlay" id="foundOverlay" hidden>
     <div class="stamp" id="stamp">FOUND</div>
     <div class="slip">
       <p id="slipText"></p>
-      <p class="slip-letter" id="slipLetter"></p>
+      <div class="slip-book" id="slipBook" hidden></div>
       <p class="slip-note" id="slipNote" hidden></p>
       <div class="slip-actions">
         <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
