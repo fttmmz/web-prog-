@@ -15,11 +15,11 @@
       <span class="brand">The Unreturned</span>
     </div>
 
-    <div class="found" title="Books found">
+    <div class="found" title="Volumes of the series found">
       <div class="mini-shelf" id="miniShelf" aria-hidden="true">
-        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
       </div>
-      <span class="count"><span id="count">0</span> of 5</span>
+      <span class="count"><span id="count">0</span> of 4</span>
     </div>
 
     <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
@@ -46,25 +46,25 @@
       <h2>Books found</h2>
 
       <!-- Each row shows the secret name, LOCKED or date stamp,
-           and the recovered book (its title is one letter). Rows are filled by script.js -->
+           and the recovered book. Rows are filled by script.js -->
       <div id="checkoutRows" class="checkout-rows" aria-live="polite"></div>
 
       <!-- Secret 5: put the four recovered books back on the shelf in the right order.
-           Their one-letter titles spell the shelf mark. -->
-      <h2>Return the books to the shelf</h2>
+           They are Volumes I-IV of one series, and their one-letter titles spell the shelf mark. -->
+      <h2>Return the series to the shelf</h2>
       <p class="label">
-        Four books were never returned. Find them in the library,
-        then shelve them in order by title.
+        The four books are volumes of one series.
+        Shelve them in volume order.
       </p>
 
     <form id="shelfForm">
-        <!-- Four spaces on the shelf, one for each book's title -->
+        <!-- Four spaces on the shelf, one for each volume's title -->
         <div class="shelf-form-row">
-            <div class="shelf-letter-boxes" role="group" aria-label="Shelf with four spaces for the recovered books">
-                <input class="shelf-letter" aria-label="Book 1 title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
-                <input class="shelf-letter" aria-label="Book 2 title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
-                <input class="shelf-letter" aria-label="Book 3 title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
-                <input class="shelf-letter" aria-label="Book 4 title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+            <div class="shelf-letter-boxes" role="group" aria-label="Shelf with four spaces for Volumes I to IV">
+                <input class="shelf-letter" aria-label="Volume I title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Volume II title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Volume III title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Volume IV title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
             </div>
 
             <button class="btn" id="checkShelfButton" type="button">Check</button>
