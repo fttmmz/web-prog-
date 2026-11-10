@@ -214,7 +214,7 @@ button { font: inherit; color: inherit; }
 }
 #hintPop { top: calc(100% + 8px); right: 28px; }
 
-/* ---------- FOUND stamp and letter slip ---------- */
+/* ---------- FOUND stamp and recovered-book slip ---------- */
 .overlay {
   position: fixed;
   inset: 0;
@@ -256,12 +256,41 @@ button { font: inherit; color: inherit; }
   font-family: var(--mono);
   transform: rotate(1deg);
 }
-.slip-letter {
-  font-size: 40px;
-  font-weight: bold;
-  line-height: 1;
-  color: #31407A;
+/* ---------- Recovered books (their titles are single letters) ---------- */
+/* each book sets its cover colour with --c */
+.book {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 30px;
+  background: var(--c);
+  color: #E9D7A6;
+  border-left: 3px solid rgba(0, 0, 0, .28);   /* the spine edge */
+  font: bold 15px/1 Georgia, serif;
 }
+/* a space where a book has not been found yet */
+.book.empty {
+  background: none;
+  border: 1px dashed #B9AD98;
+}
+/* the shelf mark row has no book of its own */
+.book.none { visibility: hidden; }
+
+.slip-book {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.slip-book .book {
+  width: 58px;
+  height: 80px;
+  border-left-width: 6px;
+  font-size: 40px;
+  box-shadow: 3px 3px 0 rgba(43, 38, 34, .25);
+}
+.slip-book-caption { font-size: 13px; }
 .slip-note { font-size: 13px; color: #74695B; }
 .slip-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
 .slip .go-next {
@@ -847,10 +876,10 @@ body.night .table-book {
   margin-top: 30px;
 }
 
-/* Each row shows the secret name, stamp status, and letter */
+/* Each row shows the secret name, stamp status, and recovered book */
 .checkout-entry {
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(130px,auto) 24px;
+  grid-template-columns: minmax(0,1fr) minmax(130px,auto) 22px;
   gap: 12px;
   align-items: center;
   padding: 16px 0;
@@ -895,11 +924,13 @@ body.night .table-book {
   text-transform: uppercase;
 }
 
-/* Four separate boxes for entering the final word */
+/* Four spaces on a shelf, one for each recovered book's title */
 .shelf-letter-boxes {
   display: flex;
   gap: 10px;
-  align-items: center;
+  align-items: flex-end;
+  padding: 0 10px;
+  border-bottom: 7px solid #7A5229;   /* the shelf board */
 }
 
 .shelf-form-row .shelf-letter {
@@ -915,7 +946,15 @@ body.night .table-book {
   border-radius: 0;
 }
 
-/* Highlight the letter box currently selected */
+/* a title that matches a recovered book takes that book's cover */
+.shelf-form-row .shelf-letter.filled {
+  background: var(--c);
+  color: #E9D7A6;
+  border-color: var(--c);
+  border-left: 5px solid rgba(0, 0, 0, .28);
+}
+
+/* Highlight the shelf space currently selected */
 .shelf-form-row .shelf-letter:focus {
   outline: 2px solid #31407A;
   outline-offset: 2px;
@@ -953,7 +992,7 @@ body.night .table-book {
   margin-top: 20px;
 }
 
-/* Shake the letter boxes when the answer is incorrect */
+/* Shake the shelf when the order is wrong */
 .shelf-form-row input.shake {
   animation: checkoutShake .3s;
 }
@@ -970,7 +1009,7 @@ body.night .table-book {
 /* Adjust the Checkout Card for smaller screens */
 @media (max-width: 550px) {
   .checkout-entry {
-    grid-template-columns: minmax(0,1fr) minmax(95px,auto) 18px;
+    grid-template-columns: minmax(0,1fr) minmax(95px,auto) 22px;
     gap: 7px;
     font-size: 11px;
   }

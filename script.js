@@ -8,38 +8,55 @@
 const STORAGE_KEY = 'theUnreturned';
 const FINAL_CODE = 'LOST';
 
+// Secrets 1-4 each return a lost book. Each book's title is one letter,
+// and the four titles put back on the shelf in order spell FINAL_CODE.
+// "colour" is the book's cover (it matches its book on the small shelf).
 const SECRETS = [
   {
     name: 'The Crest',
-    letter: 'L',
-    message: 'Look closer. The first letter is L.',
+    title: 'L',
+    colour: '#2F4A3A',
+    message: 'Look closer. A book that was never returned was hiding behind the crest. Its title is a single letter: L.',
     hint: 'Some crests are worth more than a glance. Try pressing the one at the front desk.'
   },
   {
     name: 'The Bookplate',
-    letter: 'O',
-    message: 'A bookplate was hiding here. The second letter is O.',
+    title: 'O',
+    colour: '#6B2430',
+    message: 'A bookplate was hiding here. It belongs to a missing book titled O.',
     hint: 'Not every book wants to be opened. Some only want to be noticed. Check the shelves.'
   },
   {
     name: 'The Shelf Order',
-    letter: 'S',
-    message: 'Shelved correctly. The third letter is S.',
+    title: 'S',
+    colour: '#A07A2E',
+    message: 'Shelved correctly. A thin book slides out from between them, titled S.',
     hint: 'The librarian shelves books by the hours of the day.'
   },
   {
     name: 'The Forgotten Word',
-    letter: 'T',
-    message: 'The lights go out. The fourth letter is T.',
+    title: 'T',
+    colour: '#31407A',
+    message: 'The lights go out. In the dark you find one more lost book, titled T.',
     hint: 'Look at the bottom of the front desk page. Then say it quietly to the librarian.'
   },
   {
     name: 'The Shelf Mark',
-    letter: '',
-    message: 'The Special Collections room is open.',
-    hint: 'Four letters make one word. Where do they go?'
+    title: '',
+    colour: '#5A3A22',
+    message: 'The four books are back on the shelf, and their titles spell LOST. The Special Collections room is open.',
+    hint: 'Four lost books, four one-letter titles. Put them back on the shelf in the right order.'
   }
 ];
+
+// A small book cover with the book's one-letter title on it
+function makeBook(secret) {
+  const book = document.createElement('span');
+  book.className = 'book';
+  book.style.setProperty('--c', secret.colour);
+  book.textContent = secret.title;
+  return book;
+}
 
 // Every page of the library.
 // "unlockedBy" is the secret that opens it (null means it is always open).
@@ -158,9 +175,16 @@ function unlockSecret(i) {
 function showFound(i) {
   document.getElementById('slipText').textContent = SECRETS[i].message;
 
-  const letter = document.getElementById('slipLetter');
-  letter.textContent = SECRETS[i].letter;
-  letter.hidden = SECRETS[i].letter === '';
+  // Secrets 1-4 hand the player a recovered book
+  const slipBook = document.getElementById('slipBook');
+  slipBook.replaceChildren();
+  slipBook.hidden = SECRETS[i].title === '';
+  if (SECRETS[i].title) {
+    const caption = document.createElement('span');
+    caption.className = 'slip-book-caption';
+    caption.textContent = 'Book recovered: "' + SECRETS[i].title + '"';
+    slipBook.append(makeBook(SECRETS[i]), caption);
+  }
 
   // Does this secret open a new page? Then offer a way to it.
   const goNext = document.getElementById('goNext');
@@ -437,7 +461,7 @@ function setupReadingRoom() {
 function setupCheckoutCard() {
   const rows = document.getElementById('checkoutRows');
 
-  // Display the five secrets with their names, stamps, and letters.
+  // Display the five secrets with their names, stamps, and recovered books.
   function renderCard() {
     rows.replaceChildren();
 
@@ -452,12 +476,17 @@ function setupCheckoutCard() {
       status.className = state.found[i] ? 'checkout-stamped' : 'checkout-locked';
       status.textContent = state.found[i] ? 'STAMPED · ' + state.dates[i] : 'LOCKED';
 
-      const letter = document.createElement('strong');
+      // Secrets 1-4 show their recovered book, or an empty space until it is found.
+      let book;
+      if (i < 4 && state.found[i]) {
+        book = makeBook(secret);
+      } else {
+        book = document.createElement('span');
+        book.className = 'book empty';
+      }
+      if (i === 4) book.classList.add('none');
 
-      // Each discovered secret reveals its own letter in the journal.
-      letter.textContent = i < 4 && state.found[i] ? secret.letter : '—';
-
-      row.append(name, status, letter);
+      row.append(name, status, book);
       rows.appendChild(row);
     });
   }
@@ -486,15 +515,26 @@ function setupCheckoutCard() {
     );
   });
 
-  // Allow one letter per box and automatically move to the next box.
-  // Support Backspace, arrow keys, and pasting letters.
+  // Each box is a space on the shelf for one book (one letter title).
+  // Typing a title moves to the next space. Backspace, arrow keys and
+  // pasting also work.
   const inputs = Array.from(document.querySelectorAll('.shelf-letter'));
   const boxes = document.querySelector('.shelf-letter-boxes');
+
+  // If the typed title matches a recovered book, the box takes that book's cover
+  function paintBox(input) {
+    const book = SECRETS.find(function (secret, i) {
+      return i < 4 && state.found[i] && secret.title === input.value;
+    });
+    input.classList.toggle('filled', Boolean(book));
+    input.style.setProperty('--c', book ? book.colour : '');
+  }
 
   inputs.forEach(function (input, index) {
     input.addEventListener('input', function () {
       const clean = input.value.replace(/[^a-z]/gi, '').slice(-1).toUpperCase();
       input.value = clean;
+      paintBox(input);
 
       if (clean && index < inputs.length - 1) {
         inputs[index + 1].focus();
@@ -524,15 +564,16 @@ function setupCheckoutCard() {
 
       for (let offset = 0; offset < pasted.length && index + offset < inputs.length; offset++) {
         inputs[index + offset].value = pasted[offset];
+        paintBox(inputs[index + offset]);
       }
 
       inputs[Math.min(index + pasted.length, inputs.length - 1)].focus();
     });
   });
 
-  // Secret 5: check the four-letter shelf mark.
+  // Secret 5: check the four book titles on the shelf.
   // A correct answer unlocks Special Collections.
-  // A wrong answer shakes the letter boxes.
+  // A wrong answer shakes the shelf.
   const feedback = document.getElementById('shelfFeedback');
 
   function checkShelfMark() {
@@ -541,14 +582,14 @@ function setupCheckoutCard() {
     }).join('');
 
     if (!state.found.slice(0, 4).every(Boolean)) {
-      feedback.textContent = 'Find the other letters first.';
+      feedback.textContent = 'Some books are still missing. Find them first.';
     } else if (answer === FINAL_CODE) {
-      feedback.textContent = 'STAMPED! Special Collections unlocked.';
+      feedback.textContent = 'STAMPED! The books are back in order. Special Collections unlocked.';
       unlockSecret(4);
       renderCard();
       updateSpecialLink();
     } else {
-      feedback.textContent = 'That is not on the shelf.';
+      feedback.textContent = 'Those books do not go there. Try another order.';
 
       boxes.classList.remove('shake');
       void boxes.offsetWidth;
