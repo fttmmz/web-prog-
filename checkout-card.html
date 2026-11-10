@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout Card | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="checkout-card">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- Checkout Card: shows the player's progress and collected secrets -->
+  <main class="checkout-page">
+    <a class="back" href="library.html">&larr; Main Hall</a>
+
+    <div class="page-head">
+      <h1>Checkout Card</h1>
+      <span class="label">Secret journal · 5 entries</span>
+    </div>
+
+    <!-- Library record with five secret entries -->
+    <section class="checkout-paper">
+      <p class="label">LIBRARY RECORD / RECOVERED BOOKS</p>
+      <h2>Books found</h2>
+
+      <!-- Each row shows the secret name, LOCKED or date stamp,
+           and the collected letter. Rows are filled by script.js -->
+      <div id="checkoutRows" class="checkout-rows" aria-live="polite"></div>
+
+      <!-- Secret 5: enter the four collected letters in the correct order -->
+      <h2>Four-letter shelf mark</h2>
+      <p class="label">
+        Collect the four letters from the library,
+        then enter the shelf mark in order.
+      </p>
+
+    <form id="shelfForm">
+        <!-- Four separate boxes, one for each letter -->
+        <div class="shelf-form-row">
+            <div class="shelf-letter-boxes" role="group" aria-label="Four-letter shelf mark">
+                <input class="shelf-letter" aria-label="Letter 1" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Letter 2" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Letter 3" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Letter 4" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+            </div>
+
+            <button class="btn" id="checkShelfButton" type="button">Check</button>
+        </div>
+    </form>
+
+      <!-- Shows feedback for correct or incorrect shelf marks.
+           Wrong answers shake the letter boxes using script.js -->
+      <p id="shelfFeedback" role="status" aria-live="polite"></p>
+
+      <!-- Special Collections link appears after Secret 5 is unlocked -->
+      <a id="specialCollectionsLink" class="btn checkout-special-link" href="special-collections.html" hidden>
+        Enter Special Collections &rarr;
+      </a>
+
+      <!-- Hint and restart buttons -->
+      <div class="checkout-actions">
+        <button type="button" id="checkoutHintBtn" class="btn" aria-label="Ask the librarian for a hint">Ask the librarian</button>
+        <button type="button" id="returnBooksBtn" class="btn">Return all books</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOUND stamp and letter slip (same on every page) -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

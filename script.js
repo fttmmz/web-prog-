@@ -346,12 +346,308 @@ function setupStacks() {
 }
 
 // =========================================================
+// Page 3: The Reading Room
+// =========================================================
+function setupReadingRoom() {
+  // -------------------------------------------------------
+  // Secret 3: click the books in order:
+  // Morning Tea -> Midday Walk -> Evening Lamp
+  // -------------------------------------------------------
+  const correctOrder = ['morning', 'midday', 'evening'];
+  const clickedOrder = [];
+  const books = document.querySelectorAll('.table-book');
+  const bookGroup = document.getElementById('orderBooks');
+
+  books.forEach(function (book) {
+    book.addEventListener('click', function () {
+      // Secret already solved: do not start the puzzle again.
+      if (state.found[2]) return;
+
+      const choice = book.dataset.order;
+      const expected = correctOrder[clickedOrder.length];
+
+      // If this click is not the next correct book, shake and reset.
+      if (choice !== expected) {
+        clickedOrder.length = 0;
+
+        books.forEach(function (item) {
+          item.classList.remove('chosen');
+        });
+
+        bookGroup.classList.remove('shake');
+        void bookGroup.offsetWidth;
+        bookGroup.classList.add('shake');
+        return;
+      }
+
+      clickedOrder.push(choice);
+      book.classList.add('chosen');
+
+      // All three were clicked correctly.
+      if (clickedOrder.length === correctOrder.length) {
+        clickedOrder.length = 0;
+
+        books.forEach(function (item) {
+          item.classList.remove('chosen');
+        });
+
+        unlockSecret(2);
+      }
+    });
+  });
+
+  // -------------------------------------------------------
+  // Secret 4: type SILENCE.
+  // It works in the text box and anywhere else on the page.
+  // -------------------------------------------------------
+  const librarianInput = document.getElementById('librarianInput');
+  let typedLetters = '';
+
+  function findSilence() {
+    if (state.found[3]) return;
+
+    unlockSecret(3);
+  }
+
+  // If the player types in the visible text box.
+  librarianInput.addEventListener('input', function () {
+    if (librarianInput.value.toLowerCase().includes('silence')) {
+      findSilence();
+    }
+  });
+
+  // If the player types anywhere else on the page.
+  document.addEventListener('keydown', function (event) {
+    if (document.activeElement === librarianInput) return;
+    if (event.key.length !== 1) return;
+
+    typedLetters += event.key.toLowerCase();
+    typedLetters = typedLetters.slice(-7);
+
+    if (typedLetters === 'silence') {
+      findSilence();
+      typedLetters = '';
+    }
+  });
+}
+
+// =========================================================
+// Page 4: Checkout Card — five stamped secrets and shelf mark
+// =========================================================
+function setupCheckoutCard() {
+  const rows = document.getElementById('checkoutRows');
+
+  // Display the five secrets with their names, stamps, and letters.
+  function renderCard() {
+    rows.replaceChildren();
+
+    SECRETS.forEach(function (secret, i) {
+      const row = document.createElement('div');
+      row.className = 'checkout-entry';
+
+      const name = document.createElement('span');
+      name.textContent = secret.name;
+
+      const status = document.createElement('span');
+      status.className = state.found[i] ? 'checkout-stamped' : 'checkout-locked';
+      status.textContent = state.found[i] ? 'STAMPED · ' + state.dates[i] : 'LOCKED';
+
+      const letter = document.createElement('strong');
+
+      // Each discovered secret reveals its own letter in the journal.
+      letter.textContent = i < 4 && state.found[i] ? secret.letter : '—';
+
+      row.append(name, status, letter);
+      rows.appendChild(row);
+    });
+  }
+
+  renderCard();
+
+  // Show the Special Collections link only after Secret 5 is solved.
+  const specialLink = document.getElementById('specialCollectionsLink');
+
+  function updateSpecialLink() {
+    specialLink.hidden = !state.found[4];
+  }
+
+  updateSpecialLink();
+
+  // Give the player a hint for the next unsolved secret.
+  document.getElementById('checkoutHintBtn').addEventListener('click', function () {
+    const next = state.found.findIndex(function (found) {
+      return !found;
+    });
+
+    showWhisper(
+      next === -1
+        ? 'Every book is back on its shelf. Thank you.'
+        : SECRETS[next].hint
+    );
+  });
+
+  // Allow one letter per box and automatically move to the next box.
+  // Support Backspace, arrow keys, and pasting letters.
+  const inputs = Array.from(document.querySelectorAll('.shelf-letter'));
+  const boxes = document.querySelector('.shelf-letter-boxes');
+
+  inputs.forEach(function (input, index) {
+    input.addEventListener('input', function () {
+      const clean = input.value.replace(/[^a-z]/gi, '').slice(-1).toUpperCase();
+      input.value = clean;
+
+      if (clean && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Backspace' && !input.value && index > 0) {
+        inputs[index - 1].focus();
+      }
+
+      if (event.key === 'ArrowLeft' && index > 0) {
+        inputs[index - 1].focus();
+      }
+
+      if (event.key === 'ArrowRight' && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+    });
+
+    input.addEventListener('paste', function (event) {
+      event.preventDefault();
+
+      const pasted = (event.clipboardData.getData('text') || '')
+        .replace(/[^a-z]/gi, '')
+        .toUpperCase();
+
+      for (let offset = 0; offset < pasted.length && index + offset < inputs.length; offset++) {
+        inputs[index + offset].value = pasted[offset];
+      }
+
+      inputs[Math.min(index + pasted.length, inputs.length - 1)].focus();
+    });
+  });
+
+  // Secret 5: check the four-letter shelf mark.
+  // A correct answer unlocks Special Collections.
+  // A wrong answer shakes the letter boxes.
+  const feedback = document.getElementById('shelfFeedback');
+
+  function checkShelfMark() {
+    const answer = inputs.map(function (input) {
+      return input.value.trim().toUpperCase();
+    }).join('');
+
+    if (!state.found.slice(0, 4).every(Boolean)) {
+      feedback.textContent = 'Find the other letters first.';
+    } else if (answer === FINAL_CODE) {
+      feedback.textContent = 'STAMPED! Special Collections unlocked.';
+      unlockSecret(4);
+      renderCard();
+      updateSpecialLink();
+    } else {
+      feedback.textContent = 'That is not on the shelf.';
+
+      boxes.classList.remove('shake');
+      void boxes.offsetWidth;
+      boxes.classList.add('shake');
+    }
+  }
+
+  // Clicking CHECK and pressing Enter use the exact same validation.
+  document.getElementById('checkShelfButton').addEventListener('click', checkShelfMark);
+
+  document.getElementById('shelfForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    checkShelfMark();
+  });
+
+  inputs.forEach(function (input) {
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        checkShelfMark();
+      }
+    });
+  });
+
+  // Clear saved progress and return to the Front Desk.
+  document.getElementById('returnBooksBtn').addEventListener('click', function () {
+    if (confirm('Return all books and erase your saved progress?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      location.href = 'index.html';
+    }
+  });
+}
+
+// =========================================================
+// Page 5: Special Collections
+// =========================================================
+function setupSpecialCollections() {
+  const list = document.getElementById('finalSecretList');
+
+  // Display all five recovered secrets.
+  SECRETS.forEach(function (secret, i) {
+    const row = document.createElement('div');
+    row.className = 'final-secret-row';
+
+    const number = document.createElement('span');
+    number.className = 'secret-number';
+    number.textContent = String(i + 1).padStart(2, '0');
+
+    const details = document.createElement('div');
+    details.className = 'secret-details';
+
+    const name = document.createElement('h2');
+    name.textContent = secret.name;
+
+    const message = document.createElement('p');
+    message.textContent = secret.message;
+
+    details.appendChild(name);
+    details.appendChild(message);
+
+    const date = document.createElement('span');
+    date.className = 'secret-date';
+    date.textContent = state.dates[i] || 'FOUND';
+
+    row.appendChild(number);
+    row.appendChild(details);
+    row.appendChild(date);
+
+    list.appendChild(row);
+  });
+
+  // Final reward sound and stamp animation.
+  playSound('unlock');
+
+  const finalStamp = document.getElementById('finalStamp');
+  finalStamp.classList.remove('play');
+  void finalStamp.offsetWidth;
+  finalStamp.classList.add('play');
+
+  // Clear saved progress and restart the game.
+  document.getElementById('playAgainBtn').addEventListener('click', function () {
+    const restart = confirm(
+      'Return all books and erase your saved progress?'
+    );
+
+    if (!restart) return;
+
+    localStorage.removeItem(STORAGE_KEY);
+    location.href = 'index.html';
+  });
+}
+
+// =========================================================
 // Start: shared parts first, then the code for this page
 // =========================================================
 if (checkPageAccess()) {
   const page = document.body.dataset.page;
 
-  if (state.found[3]) {
+  if (state.found[4]) {
     document.body.classList.add('night');
   }
 
@@ -362,6 +658,9 @@ if (checkPageAccess()) {
   if (page === 'front-desk') setupFrontDesk();
   if (page === 'main-hall') setupMainHall();
   if (page === 'stacks') setupStacks();
+  if (page === 'reading-room') setupReadingRoom();
+  if (page === 'checkout-card') setupCheckoutCard();
+  if (page === 'special-collections') setupSpecialCollections();
 
   // the hall reads "visited" first, so it is marked after setup
   markVisited(page);

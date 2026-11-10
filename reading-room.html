@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Room | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="reading-room">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn"
+      aria-expanded="false" aria-controls="hintPop">
+      Ask the librarian
+    </button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- Reading Room -->
+  <main class="reading-room">
+    <a class="back" href="library.html">&larr; Main Hall</a>
+
+    <div class="page-head">
+      <h1>The Reading Room</h1>
+      <span class="label">Quiet study · 3 books</span>
+    </div>
+
+    <section class="reading-scene" aria-label="Reading room puzzle">
+      <!-- Secret 4 clue -->
+      <aside class="wall-note">
+        <span class="label">Notice</span>
+        <p>
+          The librarian answers to one word,<br>
+          printed on every library wall.
+        </p>
+      </aside>
+
+      <!-- Secret 3: click the books in time-of-day order -->
+      <div class="reading-table">
+        <div class="table-books" id="orderBooks">
+          <!-- The books are deliberately NOT displayed in the correct order.
+               Correct puzzle order is still:
+               Morning Tea -> Midday Walk -> Evening Lamp -->
+          <button type="button" class="table-book midday"
+            data-order="midday">
+            <span>Midday Walk</span>
+          </button>
+
+          <button type="button" class="table-book evening"
+            data-order="evening">
+            <span>Evening Lamp</span>
+          </button>
+
+          <button type="button" class="table-book morning"
+            data-order="morning">
+            <span>Morning Tea</span>
+          </button>
+        </div>
+
+        <div class="table-edge"></div>
+        <div class="table-leg left-leg"></div>
+        <div class="table-leg right-leg"></div>
+      </div>
+    </section>
+
+    <!-- Secret 4: SILENCE can be typed here or anywhere on the page -->
+    <section class="librarian-box">
+      <label for="librarianInput" class="label">Speak to the librarian</label>
+      <p class="librarian-prompt">
+        The librarian waits for the one word hinted at by the notice above.
+      </p>
+      <input
+        type="text"
+        id="librarianInput"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Enter the forgotten word..."
+        aria-label="Enter the forgotten word"
+      >
+      <p class="type-note">
+        Hint: you may have seen this word somewhere else in the library.
+      </p>
+    </section>
+  </main>
+
+  <!-- FOUND stamp and letter slip -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

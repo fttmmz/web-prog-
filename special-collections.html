@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Special Collections | The Unreturned</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="special-collections">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="where">
+      <span class="brand">The Unreturned</span>
+    </div>
+
+    <div class="found" title="Books found">
+      <div class="mini-shelf" id="miniShelf" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span class="count"><span id="count">0</span> of 5</span>
+    </div>
+
+    <button type="button" class="ask" id="askBtn"
+      aria-expanded="false" aria-controls="hintPop">
+      Ask the librarian
+    </button>
+
+    <div class="pop" id="hintPop" hidden>
+      <span class="label">The librarian whispers</span>
+      <p id="hintText"></p>
+      <button type="button" class="close" id="hintClose">Thank you</button>
+    </div>
+  </header>
+
+  <!-- Special Collections: final room unlocked after finding all five secrets -->
+  <main class="special-collections">
+
+    <!-- Shows that the player has unlocked the restricted room -->
+    <p class="special-kicker label">Restricted room · access granted</p>
+
+    <!-- Final celebration stamp animated using CSS -->
+    <div class="final-stamp" id="finalStamp">
+      ALL BOOKS FOUND
+    </div>
+
+    <h1>Special Collections</h1>
+
+    <!-- Final message displayed after completing the game -->
+    <p class="final-message">
+      Some books were never returned.<br>
+      You found them all.
+    </p>
+
+    <!-- Recovered record listing all five discovered secrets -->
+    <section class="secret-record">
+      <div class="record-heading">
+        <span class="label">Recovered record</span>
+        <span class="label">5 entries</span>
+      </div>
+
+      <!-- The list of discovered secrets is filled by script.js -->
+      <div id="finalSecretList" class="final-secret-list"></div>
+    </section>
+
+    <!-- Navigation and restart buttons -->
+    <div class="final-actions">
+      <a class="btn" href="library.html">Return to Main Hall</a>
+
+      <!-- Resets game progress and allows the player to start again -->
+      <button type="button" class="btn reset-game" id="playAgainBtn">
+        Return all books &amp; play again
+      </button>
+    </div>
+
+  </main>
+
+  <!-- FOUND stamp and letter slip (same on every page) -->
+  <div class="overlay" id="foundOverlay" hidden>
+    <div class="stamp" id="stamp">FOUND</div>
+    <div class="slip">
+      <p id="slipText"></p>
+      <p class="slip-letter" id="slipLetter"></p>
+      <p class="slip-note" id="slipNote" hidden></p>
+      <div class="slip-actions">
+        <a class="btn go-next" id="goNext" href="#" hidden>Go next</a>
+        <button type="button" class="stay" id="stayHere">Stay here</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared JavaScript handles progress, final secret list and restart -->
+  <script src="script.js"></script>
+</body>
+</html>
