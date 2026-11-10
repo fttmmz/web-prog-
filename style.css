@@ -1249,3 +1249,71 @@ body.night .table-book {
     transition: none !important;
   }
 }
+
+/* ---------- Reading Room: center the puzzle table ---------- */
+.reading-scene {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 34px;
+}
+.reading-scene .reading-table { flex: 0 1 650px; }
+
+/* ---------- Archives: readable parchment ---------- */
+.archives-page { max-width: 906px; margin: 0 auto; padding: 36px 28px 60px; }
+.archives-scene {
+  margin-top: 26px;
+  padding: clamp(24px, 5vw, 52px);
+  background: linear-gradient(145deg, #e7dbbd, #d3c3a3);
+  border: 1px solid #ab9877;
+  color: #352719;
+}
+.archives-document {
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 26px;
+  background: #f5ebd5;
+  border: 1px solid #b7a789;
+  box-shadow: 4px 6px 0 rgba(67, 50, 30, .12);
+  text-align: center;
+}
+.archives-document p { margin-top: 12px; line-height: 1.6; }
+.archives-footnote { font-style: italic; }
+.archives-page .librarian-box { max-width: 600px; margin: 0 auto; }
+.archives-page .archives-scene,
+.archives-page .archives-document,
+.archives-page .archives-document p,
+.archives-page .archives-footnote,
+.archives-page .librarian-box,
+.archives-page .label,
+.archives-page .librarian-prompt,
+.archives-page .type-note { color: #3b2b1c; }
+.archives-page #librarianInput {
+  background: #fff8e9;
+  border: 1px solid #80694c;
+  color: #2d2117;
+}
+.archives-page #librarianInput::placeholder { color: #75624d; opacity: 1; }
+
+/* ---------- Checkout Card: per-letter position feedback ---------- */
+.shelf-form-row .shelf-letter.position-correct,
+.shelf-form-row .shelf-letter.position-correct.filled {
+  background: #d4f0d8;
+  color: #164d2a;
+  border: 3px solid #28864a;
+}
+.shelf-form-row .shelf-letter.position-wrong,
+.shelf-form-row .shelf-letter.position-wrong.filled {
+  background: #f8d5d5;
+  color: #822020;
+  border: 3px solid #b93434;
+}
+.shelf-form-row .shelf-letter.position-shake { animation: positionShake .35s ease-in-out; }
+@keyframes positionShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shelf-form-row .shelf-letter.position-shake { animation: none; }
+}

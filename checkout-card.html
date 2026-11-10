@@ -50,20 +50,20 @@
       <div id="checkoutRows" class="checkout-rows" aria-live="polite"></div>
 
       <!-- Secret 5: put the four recovered books back on the shelf in the right order.
-           They are Volumes I-IV of one series, and their one-letter titles spell the shelf mark. -->
+           They are Volumes I-IV of one series, but their one-letter titles are scrambled. -->
       <h2>Return the series to the shelf</h2>
       <p class="label">
         The four books are volumes of one series.
-        Shelve them in volume order.
+        Their titles are mixed up. Rearrange the letters to discover the shelf mark.
       </p>
 
     <form id="shelfForm">
         <!-- Four spaces on the shelf, one for each volume's title -->
         <div class="shelf-form-row">
-            <div class="shelf-letter-boxes" role="group" aria-label="Shelf with four spaces for Volumes I to IV">
-                <input class="shelf-letter" aria-label="Volume I title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
-                <input class="shelf-letter" aria-label="Volume II title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
-                <input class="shelf-letter" aria-label="Volume III title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+            <div class="shelf-letter-boxes" role="group" aria-label="Four-letter shelf mark">
+                <input class="shelf-letter" aria-label="Letter 1" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Letter 2" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
+                <input class="shelf-letter" aria-label="Letter 3" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
                 <input class="shelf-letter" aria-label="Volume IV title" maxlength="1" inputmode="text" autocomplete="off" spellcheck="false">
             </div>
 

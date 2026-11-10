@@ -9,8 +9,8 @@ const STORAGE_KEY = 'theUnreturned';
 const FINAL_CODE = 'LOST';
 
 // Secrets 1-4 each return one volume of a lost four-volume series.
-// Each volume's title is a single letter. Shelved in volume order (I to IV),
-// the titles spell FINAL_CODE. Secret 5 is putting the series back on the shelf.
+// Each volume has a one-letter title, but the letters are recovered in
+// mixed order. Players rearrange them to discover FINAL_CODE. Secret 5 is putting the series back on the shelf.
 // "colour" is the volume's cover (it matches its book on the small shelf).
 const SERIES_NAME = 'The Unreturned';
 const BOOK_COUNT = 4;
@@ -19,33 +19,33 @@ const SECRETS = [
   {
     name: 'The Crest',
     volume: 'I',
-    title: 'L',
+    title: 'O',
     colour: '#2F4A3A',
-    message: 'Look closer. Volume I of a lost series was hiding behind the crest. Its title is a single letter: L.',
+    message: 'Look closer. Volume I of a lost series was hiding behind the crest. Its title is a single letter: O.',
     hint: 'Some crests are worth more than a glance. Try pressing the one at the front desk.'
   },
   {
     name: 'The Bookplate',
     volume: 'II',
-    title: 'O',
+    title: 'T',
     colour: '#6B2430',
-    message: 'A bookplate was hiding here. It belongs to Volume II of the same series, titled O.',
+    message: 'A bookplate was hiding here. It belongs to Volume II of the same series, titled T.',
     hint: 'Not every book wants to be opened. Some only want to be noticed. Check the shelves.'
   },
   {
     name: 'The Shelf Order',
     volume: 'III',
-    title: 'S',
+    title: 'L',
     colour: '#A07A2E',
-    message: 'Shelved correctly. Volume III slides out from between them, titled S.',
+    message: 'Shelved correctly. Volume III slides out from between them, titled L.',
     hint: 'The librarian shelves books by the hours of the day.'
   },
   {
     name: 'The Forgotten Word',
     volume: 'IV',
-    title: 'T',
+    title: 'S',
     colour: '#31407A',
-    message: 'The lights go out. In the dark you find Volume IV, the last of the series, titled T.',
+    message: 'The forgotten word reveals Volume IV, the last of the series, titled S.',
     hint: 'Look at the bottom of the front desk page. Then say it quietly to the librarian.'
   },
   {
@@ -53,8 +53,8 @@ const SECRETS = [
     volume: '',
     title: '',
     colour: '',
-    message: 'All four volumes are back on the shelf in order, and their titles spell LOST. The Special Collections room is open.',
-    hint: 'Four volumes of one series. Shelve them by volume number, then read the titles.'
+    message: 'The shelf mark is correct. All four recovered letters have found their places. Special Collections is open.',
+    hint: 'The four recovered titles are mixed up. Rearrange them into a meaningful word.'
   }
 ];
 
@@ -75,7 +75,8 @@ const PAGES = [
   { id: 'front-desk',          file: 'index.html',               name: 'Front Desk',          unlockedBy: null, secrets: [0] },
   { id: 'main-hall',           file: 'library.html',             name: 'Main Hall',           unlockedBy: 0,    secrets: [] },
   { id: 'stacks',              file: 'stacks.html',              name: 'The Stacks',          unlockedBy: 0,    secrets: [1] },
-  { id: 'reading-room',        file: 'reading-room.html',        name: 'Reading Room',        unlockedBy: 1,    secrets: [2, 3] },
+  { id: 'reading-room',        file: 'reading-room.html',        name: 'Reading Room',        unlockedBy: 1,    secrets: [2] },
+  { id: 'archives',            file: 'archives.html',            name: 'The Archives',       unlockedBy: 2,    secrets: [3] },
   { id: 'checkout-card',       file: 'checkout-card.html',       name: 'Checkout Card',       unlockedBy: 3,    secrets: [4] },
   { id: 'special-collections', file: 'special-collections.html', name: 'Special Collections', unlockedBy: 4,    secrets: [] }
 ];
@@ -432,6 +433,13 @@ function setupReadingRoom() {
     });
   });
 
+
+}
+
+// =========================================================
+// The Archives: Secret 4, the forgotten word
+// =========================================================
+function setupArchives() {
   // -------------------------------------------------------
   // Secret 4: type SILENCE.
   // It works in the text box and anywhere else on the page.
@@ -547,6 +555,7 @@ function setupCheckoutCard() {
       const clean = input.value.replace(/[^a-z]/gi, '').slice(-1).toUpperCase();
       input.value = clean;
       paintBox(input);
+      input.classList.remove('position-correct', 'position-wrong', 'position-shake');
 
       if (clean && index < inputs.length - 1) {
         inputs[index + 1].focus();
@@ -577,6 +586,7 @@ function setupCheckoutCard() {
       for (let offset = 0; offset < pasted.length && index + offset < inputs.length; offset++) {
         inputs[index + offset].value = pasted[offset];
         paintBox(inputs[index + offset]);
+        inputs[index + offset].classList.remove('position-correct', 'position-wrong', 'position-shake');
       }
 
       inputs[Math.min(index + pasted.length, inputs.length - 1)].focus();
@@ -589,23 +599,32 @@ function setupCheckoutCard() {
   const feedback = document.getElementById('shelfFeedback');
 
   function checkShelfMark() {
+    if (!state.found.slice(0, BOOK_COUNT).every(Boolean)) {
+      feedback.textContent = 'Some volumes are still missing. Find them first.';
+      return;
+    }
+
     const answer = inputs.map(function (input) {
       return input.value.trim().toUpperCase();
     }).join('');
 
-    if (!state.found.slice(0, BOOK_COUNT).every(Boolean)) {
-      feedback.textContent = 'Some volumes are still missing. Find them first.';
-    } else if (answer === FINAL_CODE) {
-      feedback.textContent = 'STAMPED! The series is back in order. Special Collections unlocked.';
+    inputs.forEach(function (input, index) {
+      const correct = input.value.toUpperCase() === FINAL_CODE[index];
+      input.classList.remove('filled', 'position-correct', 'position-wrong', 'position-shake');
+      input.classList.add(correct ? 'position-correct' : 'position-wrong');
+      if (!correct) {
+        void input.offsetWidth;
+        input.classList.add('position-shake');
+      }
+    });
+
+    if (answer === FINAL_CODE) {
+      feedback.textContent = 'All four positions are correct! Special Collections unlocked.';
       unlockSecret(4);
       renderCard();
       updateSpecialLink();
     } else {
-      feedback.textContent = 'The volumes are out of order. Try again.';
-
-      boxes.classList.remove('shake');
-      void boxes.offsetWidth;
-      boxes.classList.add('shake');
+      feedback.textContent = 'Green = correct position. Red = wrong position. Change the red letters and check again.';
     }
   }
 
@@ -719,6 +738,7 @@ if (checkPageAccess()) {
   if (page === 'main-hall') setupMainHall();
   if (page === 'stacks') setupStacks();
   if (page === 'reading-room') setupReadingRoom();
+  if (page === 'archives') setupArchives();
   if (page === 'checkout-card') setupCheckoutCard();
   if (page === 'special-collections') setupSpecialCollections();
 
