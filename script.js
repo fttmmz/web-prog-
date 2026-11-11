@@ -7,6 +7,8 @@
 // ---------- Game data ----------
 const STORAGE_KEY = 'theUnreturned';
 const FINAL_CODE = 'LOST';
+const INTRO_DELAY = 1500;    // ms before the welcome note opens on the first visit
+const NUDGE_AFTER = 45000;   // ms on a page without finding its secret before the librarian button shakes
 
 // Secrets 1-4 each return one volume of a lost four-volume series.
 // Each volume has a one-letter title, but the letters are recovered in
@@ -134,14 +136,22 @@ function todayStamp() {
 // ---------- Sounds ----------
 const sounds = {
   stamp: new Audio('sounds/stamp.mp3'),
-  unlock: new Audio('sounds/unlock.mp3')
+  unlock: new Audio('sounds/unlock.mp3'),
+  paper: new Audio('sounds/paperfold.mp3'),    // the welcome note unfolding
+  bell: new Audio('sounds/bell.wav')       // the librarian calling when someone is stuck
 };
 
+// played on every book in the Stacks when hovered (a new copy each time, see setupStacks)
+const BOOK_SOUND = 'sounds/book.wav';
+
+// Plays a sound. Returns a promise that fails if the browser blocked it
+// (browsers block sound until the visitor has clicked something on the page).
 function playSound(name) {
   const sound = sounds[name];
   sound.currentTime = 0;
-  // some browsers block sound until the visitor has clicked something
-  sound.play().catch(function () {});
+  const playing = sound.play();
+  playing.catch(function () {});
+  return playing;
 }
 
 // ---------- Locked pages ----------
@@ -177,6 +187,7 @@ function unlockSecret(i) {
   state.dates[i] = todayStamp();
   saveState();
 
+  stopNudge();   // they found it, no need to point at the librarian
   updateHeader();
   if (i < BOOK_COUNT) {
     document.querySelectorAll('#miniShelf span')[i].classList.add('new');
@@ -273,8 +284,38 @@ function hintForThisPage() {
   return SECRETS[next].hint;
 }
 
+// ---------- Nudge: the librarian button shakes when someone seems stuck ----------
+// If a page still has a secret to find after NUDGE_AFTER, the "Ask the librarian"
+// button starts to shake and shows a small "Stuck?" tag until it is pressed.
+let nudgeTimer = null;
+
+function pageHasOpenSecret() {
+  const page = findPage(document.body.dataset.page);
+  return page.secrets.some(function (i) { return !state.found[i]; });
+}
+
+function startNudgeTimer() {
+  clearTimeout(nudgeTimer);
+  if (!pageHasOpenSecret()) return;
+  nudgeTimer = setTimeout(function () {
+    document.getElementById('askBtn').classList.add('nudge');
+    // one ring of the desk bell, so the shaking button gets noticed
+    // (if the browser blocks it because nothing was clicked yet, it simply stays quiet)
+    playSound('bell');
+  }, NUDGE_AFTER);
+}
+
+function stopNudge() {
+  clearTimeout(nudgeTimer);
+  document.getElementById('askBtn').classList.remove('nudge');
+}
+
 function setupLibrarian() {
-  document.getElementById('askBtn').addEventListener('click', function () {
+  const askBtn = document.getElementById('askBtn');
+  askBtn.title = 'If you are lost, ask the librarian';
+
+  askBtn.addEventListener('click', function () {
+    stopNudge();
     if (!document.getElementById('hintPop').hidden) {
       hideWhisper();
       return;
@@ -308,18 +349,49 @@ function setupFrontDesk() {
     }
   });
 
-  // the small "i" button that explains the game
+  // The welcome note that explains the game.
+  // It opens by itself a moment after the first visit, and "How to play" opens it again.
+  const intro = document.getElementById('intro');
   const infoBtn = document.getElementById('infoBtn');
-  const infoPop = document.getElementById('infoPop');
+  const introClose = document.getElementById('infoClose');
 
-  infoBtn.addEventListener('click', function () {
-    infoPop.hidden = !infoPop.hidden;
-    infoBtn.setAttribute('aria-expanded', !infoPop.hidden);
+  function openIntro() {
+    intro.hidden = false;
+    introClose.focus();
+
+    // the paper rustles as the note opens. On a first visit the browser may block
+    // the sound because nothing has been clicked yet, so it waits for the first click.
+    playSound('paper').catch(function () {
+      document.addEventListener('pointerdown', function () {
+        if (!intro.hidden) playSound('paper');
+      }, { once: true });
+    });
+  }
+
+  function closeIntro() {
+    intro.hidden = true;
+    infoBtn.focus();
+    if (!state.introSeen) {
+      state.introSeen = true;
+      saveState();
+    }
+    startNudgeTimer();   // the stuck timer starts once the note is closed
+  }
+
+  infoBtn.addEventListener('click', openIntro);
+  introClose.addEventListener('click', closeIntro);
+
+  // clicking the dark area around the note, or pressing Escape, also closes it
+  intro.addEventListener('click', function (event) {
+    if (event.target === intro) closeIntro();
   });
-  document.getElementById('infoClose').addEventListener('click', function () {
-    infoPop.hidden = true;
-    infoBtn.setAttribute('aria-expanded', 'false');
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !intro.hidden) closeIntro();
   });
+
+  if (!state.introSeen) {
+    setTimeout(openIntro, INTRO_DELAY);
+  }
 }
 
 // =========================================================
@@ -356,6 +428,23 @@ function setupMainHall() {
 // Page 2: The Stacks
 // =========================================================
 function setupStacks() {
+  // A soft "book lifted off the shelf" sound when the mouse moves onto a book.
+  // Each hover uses its own copy of the sound so quick sweeps across the shelf can overlap,
+  // with a slightly different pitch each time so it does not sound repetitive.
+  let lastLift = 0;
+  document.querySelectorAll('.spine').forEach(function (spine) {
+    spine.addEventListener('mouseenter', function () {
+      const now = Date.now();
+      if (now - lastLift < 70) return;   // not too many at once when sweeping fast
+      lastLift = now;
+
+      const lift = new Audio(BOOK_SOUND);
+      lift.volume = 0.5;
+      lift.playbackRate = 0.9 + Math.random() * 0.25;
+      lift.play().catch(function () {});   // stays quiet until the page has been clicked once
+    });
+  });
+
   // Secret 2: rest the mouse on the bookplate book (or tap it on a phone)
   const book = document.getElementById('bookplateBook');
   let hoverTimer = null;
@@ -737,4 +826,9 @@ if (checkPageAccess()) {
 
   // the hall reads "visited" first, so it is marked after setup
   markVisited(page);
+
+  // On the first visit the front desk starts the stuck timer when the welcome note closes
+  if (page !== 'front-desk' || state.introSeen) {
+    startNudgeTimer();
+  }
 }

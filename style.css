@@ -109,8 +109,8 @@ button { font: inherit; color: inherit; }
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 20px;
+  align-items: center;
+  gap: 8px 20px;
 }
 .brand {
   font-size: 18px;
@@ -118,18 +118,25 @@ button { font: inherit; color: inherit; }
   white-space: nowrap;
 }
 
-/* back button to the Main Hall (at the top of each room, under the top bar) */
+/* Back to the Main Hall: a brass button at the top left of every room */
 .back {
-  display: inline-block;
-  margin-bottom: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 10px;
   font-family: var(--mono);
   font-size: 12px;
-  letter-spacing: .12em;
+  letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--soft);
+  white-space: nowrap;
+  color: var(--head);
+  background: rgba(212, 188, 138, .1);
+  border: 1px solid var(--head);
   text-decoration: none;
 }
-.back:hover { color: var(--text); text-decoration: underline; text-underline-offset: 3px; }
+.back .arrow { font-size: 16px; line-height: 1; transition: transform .15s; }
+.back:hover { background: var(--head); color: var(--bg); }
+.back:hover .arrow { transform: translateX(-3px); }
 
 /* the small shelf that fills with one book per secret */
 .found { display: flex; align-items: center; gap: 12px; }
@@ -177,10 +184,44 @@ button { font: inherit; color: inherit; }
   text-transform: uppercase;
   white-space: nowrap;
   text-decoration: none;
+  color: var(--text);
 }
 .ask:hover, .ask[aria-expanded="true"], .btn:hover {
   background: var(--text);
   color: var(--bg);
+}
+
+/* When someone has been stuck on a page for a while, the librarian button
+   gives a little shake every few seconds and shows a "Stuck?" tag */
+.ask { position: relative; }
+.ask.nudge {
+  border-color: var(--head);
+  color: var(--head);
+  animation: askShake 4s ease-in-out infinite;
+}
+.ask.nudge::after {
+  content: "Stuck? Click me";
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  z-index: 55;
+  padding: 3px 8px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 1px solid #B9AD98;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, .5);
+  font-size: 11px;
+  letter-spacing: .08em;
+  pointer-events: none;
+}
+@keyframes askShake {
+  0%, 16%, 100% { transform: none; }
+  2%  { transform: rotate(-5deg); }
+  4%  { transform: rotate(5deg); }
+  6%  { transform: rotate(-4deg); }
+  8%  { transform: rotate(4deg); }
+  10% { transform: rotate(-2deg); }
+  12% { transform: rotate(2deg); }
 }
 
 /* ---------- Pop-up slips (librarian hint, "i" info) ---------- */
@@ -364,27 +405,114 @@ body.night .scene img { filter: brightness(.3) saturate(.6); }
 .desk-line {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: 12px;
 }
 .notice { font-style: italic; font-size: 18px; text-align: center; }
-.info {
-  flex: none;
+/* "How to play" and "Ask the librarian" side by side in the top bar */
+.bar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+/* ---------- Welcome note (opens by itself on the first visit) ---------- */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, .65);
+}
+.intro-note {
+  margin: auto;                 /* centred, but scrolls on short screens */
+  width: min(480px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 28px 24px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 1px solid #B9AD98;
+  box-shadow: 4px 6px 0 rgba(0, 0, 0, .5);
+  transform: rotate(-.8deg);
+  animation: noteIn .45s cubic-bezier(.2, .8, .3, 1) both;
+}
+@keyframes noteIn {
+  from { transform: translateY(28px) rotate(-3deg); opacity: 0; }
+  to   { transform: rotate(-.8deg); opacity: 1; }
+}
+.intro-note .label { font-size: 11px; color: #74695B; }
+.intro-note h2 { font-size: 30px; line-height: 1.1; color: var(--stamp); }
+.intro-lead { font-size: 17px; line-height: 1.5; }
+
+/* numbered steps, each with a small stamped number */
+.intro-steps {
+  list-style: none;
+  counter-reset: step;
+  margin: 0;
+  padding: 14px 0 0;
+  border-top: 1px dashed #B9AD98;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.intro-steps li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 38px;
+  font-size: 15px;
+  line-height: 1.45;
+}
+.intro-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 1px;
   width: 26px;
   height: 26px;
-  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--stamp);
   border-radius: 50%;
-  border: 1px solid var(--text);
-  background: none;
-  cursor: pointer;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 15px;
-  line-height: 1;
+  color: var(--stamp);
+  font-family: var(--mono);
+  font-size: 13px;
 }
-.info:hover, .info[aria-expanded="true"] { background: var(--text); color: var(--bg); }
-#infoPop { bottom: calc(100% + 12px); left: 50%; transform: translateX(-50%); }
+.intro-steps strong {
+  display: block;
+  font-family: var(--mono);
+  font-weight: normal;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--stamp);
+}
+
+/* the "ask the librarian" line stands out from the rest */
+.intro-help {
+  padding: 10px 14px;
+  background: #F1E3BF;
+  border-left: 4px solid var(--stamp);
+  font-style: italic;
+  font-size: 18px;
+}
+.intro-help span {
+  display: block;
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: #74695B;
+}
+.intro-start { font-style: italic; font-size: 15px; color: #5C5246; }
+.intro .intro-go {
+  align-self: flex-start;
+  padding: 9px 16px;
+  color: var(--paper-ink);
+  border-color: var(--paper-ink);
+}
+.intro .intro-go:hover { background: var(--stamp); border-color: var(--stamp); color: var(--paper); }
 
 /* appears once the crest secret is found */
 .enter-link {

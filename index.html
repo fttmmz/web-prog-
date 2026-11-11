@@ -21,7 +21,12 @@
       <span class="count"><span id="count">0</span> of 4</span>
     </div>
 
-    <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+    <!-- the two help buttons stay side by side, even on small screens -->
+    <div class="bar-actions">
+      <!-- opens the welcome note again -->
+      <button type="button" class="btn how-btn" id="infoBtn" aria-haspopup="dialog" aria-controls="intro">How to play</button>
+      <button type="button" class="ask" id="askBtn" aria-expanded="false" aria-controls="hintPop">Ask the librarian</button>
+    </div>
 
     <div class="pop" id="hintPop" hidden>
       <span class="label">The librarian whispers</span>
@@ -44,13 +49,6 @@
 
     <div class="desk-line">
       <p class="notice">Something is missing from this library. Look closer.</p>
-      <button type="button" class="info" id="infoBtn" aria-expanded="false" aria-controls="infoPop" aria-label="How to play">i</button>
-
-      <div class="pop" id="infoPop" hidden>
-        <span class="label">How it works</span>
-        <p>Five secrets are hidden in this library. Click, hover and type to find them. Four of them return a lost volume of the same book series to your Checkout Card, and each volume&rsquo;s title is a single letter. Put the series back on the shelf in order to open Special Collections.</p>
-        <button type="button" class="close" id="infoClose">Got it</button>
-      </div>
     </div>
 
     <!-- shown once the crest secret is found -->
@@ -58,6 +56,34 @@
 
     <p class="silence">Silence, please.</p>
   </main>
+
+  <!-- Welcome note: opens by itself a moment after the first visit,
+       and again whenever "How to play" is pressed -->
+  <div class="intro" id="intro" hidden>
+    <div class="intro-note" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+      <span class="label">A note left at the front desk</span>
+      <h2 id="introTitle">Welcome, reader.</h2>
+      <p class="intro-lead">
+        Four books from one series were borrowed from this library and never returned.
+        They are hidden somewhere inside. Your job is to find them and put them back.
+      </p>
+
+      <ol class="intro-steps">
+        <li><strong>Explore the rooms</strong> Click, hover over and type on anything that looks out of place.</li>
+        <li><strong>Find the secrets</strong> Each one gives back a lost book and opens a new room. The small shelf at the top shows how many books you have.</li>
+        <li><strong>Use the Main Hall</strong> It is the map of the library. Go back to it to enter the rooms you have opened.</li>
+        <li><strong>Return the series</strong> Once you have all four books, put them back on the shelf on your Checkout Card to open the last room.</li>
+      </ol>
+
+      <p class="intro-help">
+        If you are lost, ask the librarian.
+        <span>The &ldquo;Ask the librarian&rdquo; button is at the top of every page.</span>
+      </p>
+
+      <p class="intro-start">Start right here, at the front desk.</p>
+      <button type="button" class="btn intro-go" id="infoClose">Begin the search</button>
+    </div>
+  </div>
 
   <!-- FOUND stamp and recovered-book slip (same on every page) -->
   <div class="overlay" id="foundOverlay" hidden>
